@@ -2,13 +2,13 @@ import sys
 import json
 import boto3
 import re
+from decimal import Decimal
 
-'''
 cveTable = sys.argv[1]
+awsRegion = sys.argv[2]
 
-ddbr = boto3.resource('dynamodb')
-table = ddbr.table(cveTable)
-'''
+ddbr = boto3.resource('dynamodb', region_name=awsRegion)
+table = ddbr.Table(cveTable)
 
 # Within CPE 2.3 the "a" means Application e.g. Software Package
 # We will use this to grab only these and ignore OS and Hardware
@@ -22,6 +22,26 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
     try:
         for x in cve2002['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -36,6 +56,7 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -43,7 +64,20 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -57,11 +91,25 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -77,6 +125,26 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
     try:
         for x in cve2003['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -91,6 +159,7 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -98,7 +167,20 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -112,11 +194,25 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -132,6 +228,26 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
     try:
         for x in cve2004['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -146,6 +262,7 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -153,7 +270,20 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -167,11 +297,25 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -187,6 +331,26 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
     try:
         for x in cve2005['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -201,6 +365,7 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -208,7 +373,20 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -222,11 +400,25 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -242,6 +434,26 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
     try:
         for x in cve2006['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -256,6 +468,7 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -263,7 +476,20 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -277,11 +503,25 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -297,6 +537,26 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
     try:
         for x in cve2007['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -311,6 +571,7 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -318,7 +579,20 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -332,11 +606,25 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -352,6 +640,26 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
     try:
         for x in cve2008['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -366,6 +674,7 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -373,7 +682,20 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -387,11 +709,25 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -407,6 +743,26 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
     try:
         for x in cve2009['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -421,6 +777,7 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -428,7 +785,20 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -442,11 +812,25 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -462,6 +846,26 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
     try:
         for x in cve2010['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -476,6 +880,7 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -483,7 +888,20 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -497,11 +915,25 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -517,6 +949,26 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
     try:
         for x in cve2011['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -531,6 +983,7 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -538,7 +991,20 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -552,11 +1018,25 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -572,6 +1052,26 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
     try:
         for x in cve2012['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -586,6 +1086,7 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -593,7 +1094,20 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -607,11 +1121,25 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -627,6 +1155,26 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
     try:
         for x in cve2013['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -641,6 +1189,7 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -648,7 +1197,20 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -662,11 +1224,25 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -682,6 +1258,26 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
     try:
         for x in cve2014['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -696,6 +1292,7 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -703,7 +1300,20 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -717,11 +1327,25 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -737,6 +1361,26 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
     try:
         for x in cve2015['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -751,6 +1395,7 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -758,7 +1403,20 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -772,11 +1430,25 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -792,6 +1464,26 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
     try:
         for x in cve2016['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -806,6 +1498,7 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -813,7 +1506,20 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -827,11 +1533,25 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -847,6 +1567,26 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
     try:
         for x in cve2017['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -861,6 +1601,7 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -868,7 +1609,20 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -882,11 +1636,25 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -902,6 +1670,26 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
     try:
         for x in cve2018['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -916,6 +1704,7 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -923,7 +1712,20 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -937,11 +1739,25 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -957,6 +1773,26 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
     try:
         for x in cve2019['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -971,6 +1807,7 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -978,7 +1815,20 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -992,11 +1842,25 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -1012,6 +1876,26 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
     try:
         for x in cve2020['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -1026,6 +1910,7 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -1033,7 +1918,20 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1047,11 +1945,25 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
@@ -1067,6 +1979,26 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
     try:
         for x in cve2021['CVE_Items']:
             cveId = str(x['cve']['CVE_data_meta']['ID'])
+            cveSrcUrl = 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=' + cveId
+            # We just need to grab the first one - there can be more but whatever
+            try:
+                cveRef = str(x['cve']['references']['reference_data'][0]['url'])
+            except:
+                cveRef = 'NONE_PROVIDED'
+            try:
+                cveDesc = str(x['cve']['description']['description_data'][0]['value'])
+            except:
+                cveDesc = 'NONE_PROVIDED'
+            try:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+            except:
+                cvssVersion = 'CVSSv2.0'
+                cvssVector = 'Unknown'
+                cvssScore = float(0.0)
+                cvssSeverity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -1081,6 +2013,7 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
                                 # allow us the easily pluck out the Package Name and Version
                                 # has Position 0 is the Vendor Name - which we may not care about
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                vendor = stripped[0]
                                 package = stripped[1] + '.' + stripped[2]
                                 # some CPE 23 URIs are formatted oddly and make a string such as 
                                 # package:* - this is not useful for us so all we can do is drop it
@@ -1088,7 +2021,20 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
                                 if stripped[2] == '*':
                                     pass
                                 else:
-                                    print('PACK ' + package + ' HAS VULN ' + cveId)
+                                    table.put_item(
+                                        Item={
+                                            'PackageVersion': package,
+                                            'CveId': cveId,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1102,11 +2048,25 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
                                 appCheck = cpeAppRegex.search(cpeUri)
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
+                                    vendor = stripped[0]
                                     package = stripped[1] + '.' + stripped[2]
                                     if stripped[2] == '*':
                                         pass
                                     else:
-                                        print('PACK ' + package + ' HAS VULN ' + cveId)
+                                        table.put_item(
+                                            Item={
+                                                'PackageVersion': package,
+                                                'CveId': cveId,
+                                                'CveSourceUrl': cveSrcUrl,
+                                                'CveDescription': cveDesc,
+                                                'Reference': cveRef,
+                                                'CvssVector': cvssVector,
+                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                                'CvssSeverity': cvssSeverity,
+                                                'CvssVersion': cvssVersion,
+                                                'Vendor': vendor
+                                            }
+                                        )
                                 else:
                                     pass
     except Exception as e:
