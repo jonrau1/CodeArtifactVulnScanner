@@ -76,35 +76,77 @@ TODO
 
 #### 1. What does this solution do?
 
+This project provides a mechanism with which to find every known vulnerable software package and their associated vulnerabilities and vulnerability metadata from the NIST NVD and store them within DynamoDB. EventBridge and Lambda are utilized to perform event-driven vulnerability analysis of software packages being pushed into or updated with an AWS CodeAritfact Repository. Optionally, you can configure this solution to purge vulnerable packages in CodeArtifact based on a specific CVSS score or stated severity level. This solution can be deployed for a centralized CodeArtifact model or to support a distributed model across many Accounts, Regions, and CodeArtifact Repositories.
+
 #### 2. Where is information about software packages and their associated vulnerabilities sourced from?
+
+All vulnerability, software package, and associated metadata (references, CVSS scoring information, etc.) is parsed from NIST's NVD JSON Feeds. A one-time load of all Yearly feeds is performed and a Lambda Function invoked on a schedule will perform additions or updates to files based on a specialized `Modified` feed from the NVD JSON Feeds.
 
 #### 3. What vulnerability metadata is provided within this solution?
 
+The ID of the CVE, the first reference link, a description, the CVSSv2.0 Vector String, CVSSv2.0 Base Score, CVSSv2.0 Severity Label, the Package Name, Package Version, and Package Version information are parsed from the NVD JSON Feeds. In the future additional metadata such as CVSSv3.1 scoring information may be included.
+
 #### 4. How are software vulnerabilities detected?
+
+Upon invocation from Amazon EventBridge, a Lambda Function will perform a `GetItem` API call against the DynamoDB table that contains information on all vulnerable software. If there is a match, the CVE ID and related CVSSv2.0 metadata is returned to Lambda. If there is not a match no further actions will be taken.
 
 #### 5. Where is information about detected software vulnerabilities stored?
 
+Upon detection of a vulnerable software package a finding will be created in AWS Security Hub that will contain information about the vulnerable software package, which CodeArtifact Repository it was contained in, and other helpful information such as the Account, Region, time seen, resource ARNs and related vulnerability metadata.
+
 #### 6. Can I automatically remove vulnerable packages? How does that work?
+
+Yes. If configured within the setup script for either deployment option, the Lambda function that performs vulnerability analysis of the software packages will optionally remove (aka Purge) the software package version from it's upstream CodeArtifact Repository by using the CodeArtifact [`DisposePackageVersions`](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/codeartifact.html#CodeArtifact.Client.dispose_package_versions) API.
 
 #### 7. How can I keep track of software packages that were removed via automation?
 
+If Purging is configured, these events are also sent to Security Hub as informational findings. You can use the built-in visualization functionality, Insights, in Security Hub or use a BI tool such as Amazon QuickSight to keep track of these events and software packages to provide as data points to development teams so they can push changes to their applications' requirements.
+
 #### 8. How can I report on software vulnerabilities contained in CodeArtifact?
+
+You can use Security Hub Insights or perform ingestion into another BI tool from Security Hub. In the future, an integration with Amazon QuickSight may be developed - in the meantime you can use this example from ElectricEye-Reports, an open-source AWS-native cloud security posture management (CSPM) tool by this project's author.
 
 #### 9. Will this solution work with CodeCommit?
 
+No, not as designed. Any modifications to this solution for purpose of scanning dependencies within CodeCommit are out of scope, but could perhaps be added in scope in the future.
+
 #### 10. Why is CVSSv2.0 used instead of CVSSv3.1?
+
+Due to the age of CVEs, some existed before CVSSv3.1 was released. NIST does not appear to perform retrospective updates of the CVSS Scoring and so CVSSv2.0 is used as the primary vulnerability severity assessment. In the future CVSSv3.1 with be added as another bit of metadata to be collected.
 
 #### 11. Can I perform vulnerability analysis of package dependencies?
 
+This feature is out of scope for this solution for the time being. In the future another extension will be included within Lambda to detect vulnerabilities (and purge the package) based on dependencies.
+
 #### 12. Can I report on package licenses? Can I purge based on licenses?
+
+Not at this time to either part of the question. In the future, this feature will be added.
 
 #### 13. Can I used this solution with Artifactory or another package repository?
 
+Not as configured, you should probably use [JFrog XRAY](https://jfrog.com/xray/) though, if you're already setting your money on fire to use Artifactory you obviously don't care about it to begin with.
+
 #### 14. Can I use this solution to find vulnerable packages on my Operating System?
 
-Theoretically, yes. If you had EC2 Instances managed by Systems Manager you could use the Inventory APIs to retrieve software installations and detect if they have any vulnerabilities. You could do similar on container images as well using utilities such as the Python `docker` module. That said, there are built-in vulnerability scanning utilities built into AWS Systems Manager or you can use Amazon Inpsector. Amazon Elastic Container Registry (ECR) also has a built-in vulnerability scanner based on ClairOS, but there are other open-source projects such as Trivy or Anchore that fit the container vulnerability scanning utility.
+Theoretically, yes. If you had EC2 Instances managed by Systems Manager you could use the Inventory APIs to retrieve software installations and detect if they have any vulnerabilities. You could do similar on container images as well using utilities such as the Python `docker` module. That said, there are built-in vulnerability scanning utilities built into AWS Systems Manager or you can use Amazon Inpsector. Amazon Elastic Container Registry (ECR) also has a built-in vulnerability scanner based on ClairOS, but there are other open-source projects such as Trivy or Anchore that fit the container vulnerability scanning utility. It is also important to note that any Operating System or Hardware related vulnerabilities are not ingested into DynamoDB with respect to the intended scope of this project.
+
+#### 15. How is vulnerability information maintained?
+
+Every 24 hours an Amazon EventBridge Scheduled Rule will invoke a Lambda Function that will download the `Modified` NVD JSON Feed and add the information into DynamoDB. Existing items will be overwritten based on their Software Package and CVE ID pair, new items will just be inserted like a regular item into the table. NIST maintains a 2 hour SLA to push any updates into the `Modified` feed based on if there are actually any changes. These changes may not include ones that are relevant to this solution (such as Common Weaknesses and Exploits (CWE) or reference metadata).
+
+#### 16. I want to export the package vulnerability information, how can I do that?
+
+A Python script is provided in the `/exports` directory which will read out the entire contents of the DyanmoDB table and write them into JSON, CSV or both. The script accepts a positional argument of either `JSON`, `CSV`, or `BOTH` via `sys.argv` (e.g. `python3 packageExport.py CSV`) and will create the correspond file(s).
+
+#### 17. How much does this solution cost to run?
+
+It is dependent on how many Regions and Accounts you have it deployed - but for a single load of DynamoDB it will cost $XXXXX due to Write Consumption Units (WCU) used over a period of time.
+
+TODO ADD CALCULATOR
 
 ## Contributing
+
+TODO
 
 ## License
 
