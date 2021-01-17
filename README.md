@@ -101,9 +101,37 @@ This section is meant to list out any general warnings or caveats with this solu
 
 - A Cloud9 IDE running Ubuntu 18.04LTS with the below IAM Policy attached as an Instance Profile for the underlying EC2 Instance. For more information on setting up a Cloud9 IDE see [here](https://docs.aws.amazon.com/cloud9/latest/user-guide/setting-up.html), and for information on attaching an IAM Instance Profile see [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html).
 
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:CreateTable",
+                "s3:PutObject",
+                "s3:GetObjectAcl",
+                "s3:GetObject",
+                "s3:ListAllMyBuckets",
+                "dynamodb:PutItem",
+                "cloudformation:*",
+                "s3:ListBucket",
+                "s3:PutObjectAcl"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+**Note:** You should perform additional scoping by adding condition keys, specifying resources, and finding out what CloudFormation Permissions you *actually* need - I got lazy - sorry.
+
 - AWS Security Hub enabled.
 
 - At least one CodeArtifact Domain and Repository created, obviously.
+
+- An S3 Bucket that you can upload ZIP files to (this is taken care of by the setup scripts, you just need a bucket you have IAM permissiosn to `PutObject` for).
 
 For the Distributed Deployment Model, you will need the following in addition to the above.
 
@@ -167,7 +195,7 @@ You can use Security Hub Insights or perform ingestion into another BI tool from
 
 #### Will this solution work with CodeCommit?
 
-No, not as designed. Any modifications to this solution for purpose of scanning dependencies within CodeCommit are out of scope but could perhaps be added in scope in the future.
+No, not as designed. Any modifications to this solution for purpose of scanning dependencies within CodeCommit are out of scope but could perhaps be added in scope in the future. I do reccomend using [Amazon CodeGuru Reviewer](https://aws.amazon.com/codeguru/) (if you use Python or Java) though, it has some built in [Security](https://aws.amazon.com/about-aws/whats-new/2020/12/amazon-codeguru-reviewer-announces-security-detectors-improve-code-security/) checks.
 
 #### Why is CVSSv2.0 used instead of CVSSv3.1?
 

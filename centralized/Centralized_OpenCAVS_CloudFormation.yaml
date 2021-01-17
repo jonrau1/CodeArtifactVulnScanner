@@ -15,6 +15,11 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Creates the baseline resources needed for OpenCAVS such as WAF, Kinesis, ES and MISP assets. Deploy this first.
 Parameters:
+  LambdaCodeBucket:
+    Type: String
+    Description: >-
+      The name of the S3 Bucket that contains the ZIP Archives of the Lambda functions. This would have been uploaded by the
+      setup Script (and thus the parameter injected here) - if you're doing a manual setup you need to manually upload them, obviously.
   NVDDynamoDBTableName:
     Type: String
     Description: >-
@@ -61,22 +66,19 @@ Resources:
       Description: >-
         Receives software package information from EventBridge and checks if it is vulnerable. Will optionally purge
         vulnerable packages above a certain threshold - Managed by CloudFormation
-      Handler: index.lambda_handler
+      Handler: analyzer_lambda_function.lambda_handler
       MemorySize: 256
       Role: !GetAtt OpenCAVSLambdaExecRole.Arn
-      Runtime: python3.7
-      Timeout: 60
+      Runtime: python3.8
+      Timeout: 121
       Environment:
         Variables:
           PURGE_ENABLED: !Ref PurgingEngineFlag
           CVSS2_BASE_SCORE_THRESHOLD: !Ref Cvss2BaseScoreThreshold
           NVD_DDB_TABLE: !Ref NVDDynamoDBTableName
       Code:
-        ZipFile: |
-          import os
-          import boto3
-          def lambda_handler(event, context):
-              print('TO DO!!!')
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: AnalysisLambdaPackage.zip
   OpenCAVSVulnUpdaterLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -84,21 +86,18 @@ Resources:
       Description: >-
         Every 24 hours this function will parse the Modified NVD JSON Feed and write the 
         contents into a DyanmoDB Table of your choosing - Managed by CloudFormation
-      Handler: index.lambda_handler
+      Handler: updater_lambda_function.lambda_handler
       MemorySize: 256
       Role: !GetAtt OpenCAVSLambdaExecRole.Arn
-      Runtime: python3.7
-      Timeout: 480
+      Runtime: python3.8
+      Timeout: 900
       Environment:
         Variables:
           NVD_DDB_TABLE: !Ref NVDDynamoDBTableName
           NVD_MODIFIED_URL: !Ref NistModifedJsonFeedUrl
       Code:
-        ZipFile: |
-          import os
-          import boto3
-          def lambda_handler(event, context):
-              print('TO DO!!!')
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: UpdaterLambdaPackage.zip
   OpenCAVSLambdaExecRole:
     Type: AWS::IAM::Role
     Properties:
@@ -137,18 +136,8 @@ Resources:
         source:
           - aws.codeartifact
         detail-type:
-          - Security Hub Findings - Imported
-        ## TODO: Fix this whole section!
-        detail:
-          findings:
-            ProductFields:
-              Product Name:
-                - ElectricEye
-            Severity:
-              Label:
-                - HIGH
-                - CRITICAL
-      State: "ENABLED"
+          - CodeArtifact Package Version State Change
+      State: ENABLED
       Targets: 
         - 
           Arn: !GetAtt OpenCAVSAnalysisLambdaFunction.Arn
