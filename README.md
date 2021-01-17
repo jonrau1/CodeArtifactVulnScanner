@@ -67,8 +67,6 @@ The following steps describe the event flows for a Distributed setup. The **Secu
 
 7. (**Security Account**) All findings (in their Home Region) are pushed transparently into the Security Hub Master account. You can use this to collect all information about purged packages and vulnerable software in your organization.
 
-TODO: Add Steps
-
 ## Description
 
 OpenCAVS is an attempt at building a SAST / SCA utility meant for usage with [AWS CodeArtifact](https://docs.aws.amazon.com/codeartifact/latest/ug/welcome.html), a fully managed artifact repository service used with popular build tools and package managers such as NuGet, Maven, Gradle, npm, yarn, pip, and twine. With CodeArtifact, you can centrally store software packages to increase your resilience and software supply chain issues, vulnerabilities, reduce latency or availability concerns due to upstream repository issues, and/or provide a central repository of approved software (by license, etc.).
@@ -122,8 +120,6 @@ TODO
 TODO
 
 ## FAQ
-
-NOTE TO SELF: Rearrange and add final numbers to FAQ when done...
 
 #### What does this solution do?
 
