@@ -4,8 +4,6 @@ AWS native Static Application Security Testing (SAST) utility to find and eradic
 
 ## Table of Contents
 
-TODO: Fix Links
-
 - Synopsis
 - Solution Architecture
   - Centralized Deployment (Single-Account / Single-Region)
@@ -33,13 +31,25 @@ Two different models of deployment are provided at this time. Please see the **D
 
 ### Centralized Deployment (Single-Account / Single-Region)
 
-![Centralized Architecture](./screenshots/centralized-repository-architecture.jpg)
+![Centralized Architecture](./img/centralized-repository-architecture.jpg)
 
-TODO: Add Steps
+The Centralized setup is also considered an "in-place / local" deployment. This is best suited for smaller AWS Accounts who may be using CodeArtifact in a limited capacity, or for Organizations who want to maintain a single location where CodeArtifact workloads are run. **Note:** If you have different Regions, deploying this solution to them will create their own DynamoDB Tables and manually load the entire NVD into it - you are responsbile for modifying the solution to be able to run Multi-Region.
+
+1. A one-time data load of all yearly NVD JSON Feed files is performed. All files are downloaded, unzipped, parsed, and loaded sequentially and the files destroyed after the setup script runs. **Note:** Ensure you have at least 1GB free on your storage volume to account for the files.
+
+2. Every 24 hours an Amazon EventBridge Scheduled Rule will invoke a Lambda Function that will downloaded the `Modified` NVD JSON Feed, unzip, parse and load items into a DyanmoDB Table. The key schema of the DynamoDB Table will ensure that updates will be overwrite their pre-existing entries, any unique combination of a Package Name, Package Version, and CVE ID will be added as a new item.
+
+3. Upon new software packages being pushed to (or updated within) CodeArtifact, an EventBridge Event will invoke a Lambda Function that will parse information about the software package, the Repository information, and other AWS-specific metadata from the Event payload.
+
+4. The Lambda Function invoked in Step 3 will `Scan()` the DynamoDB Table to retrieve information about the Package and associated vulnerability metadata.
+
+5. If a software vulnerability is found, a finding containing information about the CVE, CVSS metadata, the software, and the owning Repository is created in the Security Hub tenant.
+
+6. If configured, the Purging Engine within the Lambda Function invoked in Step 3 will remove the vulnerable package from CodeArtifact and an Informational finding will be created in Security Hub noting this.
 
 ### Distributed Deployment (Multi-Account / Multi-Region)
 
-![Distributed Architecture](./screenshots/distributed-repository-architecture.jpg)
+![Distributed Architecture](./img/distributed-repository-architecture.jpg)
 
 The following steps describe the event flows for a Distributed setup. The **Security** Account note describes the AWS Account you have the DynamoDB Table and Organization-wide IAM Role deployed to. The **Member** Account note represents many downstream Accounts in many Regions where the CloudWatch Event and Lambda Functions to detect pushes and updates to CodeArtifact are located.
 
@@ -75,11 +85,9 @@ In the future, it is planned to add various other features such as Business Inte
 
 This section is meant to list out any general warnings or caveats with this solution and is subject to change as the project matures.
 
-- Only CPE "Applications" (software) is parsed - there will not be any vulnerability information on Hardware or Operation Systems (OS).
+- Only CPE "Applications" (software) are parsed - there will not be any vulnerability information on Hardware or Operation Systems (OS).
 
 - Due to the fact that *all* software packages is parsed (by virtue of ingested the entire NVD) - CVSSv2.0 is used for Vector Strings, Scoring, and Severity. Older CVEs, and thus packages, do not have CVSSv3.1 scoring information. This may be added in at a later date - but will require modifications to the Purging Engine.
-
-- Due to using "hacky" methods of parsing Vendors, Package Names, and Package Versions from the CPE URI information within the NVD JSON Feeds - some values that do not format to a nice `package-name.package-version` format (e.g., `python-requests:2.2`) are dropped. For instance, the bulk load and continual loads will drop a value such as `solaris:*`.
 
 - I ***assume*** There may be mismatches between package names in CPE and what they are called by the vendor - and thus you may either get false positives or undetected vulnerabilities! There is way too much data to analyze to determine how extensive this is in reality.
 
@@ -92,6 +100,10 @@ This section is meant to list out any general warnings or caveats with this solu
 ## Prerequisites
 
 - A Cloud9 IDE running Ubuntu 18.04LTS with the below IAM Policy attached as an Instance Profile for the underlying EC2 Instance. For more information on setting up a Cloud9 IDE see [here](https://docs.aws.amazon.com/cloud9/latest/user-guide/setting-up.html), and for information on attaching an IAM Instance Profile see [here](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html).
+
+- AWS Security Hub enabled.
+
+- At least one CodeArtifact Domain and Repository created, obviously.
 
 For the Distributed Deployment Model, you will need the following in addition to the above.
 
@@ -106,7 +118,8 @@ For the Distributed Deployment Model, you will need the following in addition to
 TODO
 
 ## Distributed CodeArtifact Setup (Multi-Account / Multi-Region)
- 
+
+TODO
 
 ## FAQ
 
@@ -114,7 +127,9 @@ NOTE TO SELF: Rearrange and add final numbers to FAQ when done...
 
 #### What does this solution do?
 
-OpenCAVS provides a mechanism with which to find every known vulnerable software package and their associated vulnerabilities and vulnerability metadata from the NIST NVD and store them within DynamoDB. EventBridge and Lambda are utilized to perform event-driven vulnerability analysis of software packages being pushed into or updated with an AWS CodeArtifact Repository. Optionally, you can configure this solution to purge vulnerable packages in CodeArtifact based on a specific CVSS score or stated severity level. This solution can be deployed for a centralized CodeArtifact model or to support a distributed model across many Accounts, Regions, and CodeArtifact Repositories.
+OpenCAVS provides a mechanism with which to locate known vulnerable software packages and their associated vulnerabilities (and vulnerability metadata) from the NIST NVD and store them within DynamoDB. EventBridge and Lambda are utilized to perform event-driven vulnerability analysis of software packages being pushed into or updated within an AWS CodeArtifact Repository. 
+
+Optionally, you can configure this solution to purge vulnerable packages in CodeArtifact based on a specific CVSS score or stated severity level. This solution can be deployed for a centralized CodeArtifact model or to support a distributed model across many Accounts, Regions, and CodeArtifact Repositories.
 
 #### Where is information about software packages and their associated vulnerabilities sourced from?
 
@@ -126,15 +141,15 @@ TODO: Process Flow
 
 #### What vulnerability metadata is provided within this solution?
 
-The ID of the CVE, the first reference link, a description, the CVSSv2.0 Vector String, CVSSv2.0 Base Score, CVSSv2.0 Severity Label, the Package Name, Package Version, and Package Version information are parsed from the NVD JSON Feeds. In the future additional metadata such as CVSSv3.1 scoring information may be included.
+The ID of the CVE, the first reference link, a CVE description, the CVSSv2.0 Vector String, CVSSv2.0 Base Score, CVSSv2.0 Severity Label, and the Package Name, Package Version are parsed from the NVD JSON Feeds. In the future, additional metadata such as CVSSv3.1 scoring information may be included.
 
 #### How are software vulnerabilities detected?
 
-Upon invocation from Amazon EventBridge, a Lambda Function will perform a `GetItem` API call against the DynamoDB table that contains information on all vulnerable software. If there is a match, the CVE ID and related CVSSv2.0 metadata is returned to Lambda. If there is not a match no further actions will be taken.
+Upon invocation from Amazon EventBridge, a Lambda Function will perform a `Scan()` API call against the DynamoDB table that contains information on all vulnerable software. If there is a match, the CVE ID and related CVSSv2.0 metadata is returned to Lambda. If there is not a match no further actions will be taken.
 
 #### Where is information about detected software vulnerabilities stored?
 
-Upon detection of a vulnerable software package a finding will be created in AWS Security Hub that will contain information about the vulnerable software package, which CodeArtifact Repository it was contained in, and other helpful information such as the Account, Region, time seen, resource ARNs and related vulnerability metadata.
+Upon detection of a vulnerable software package, a finding will be created in AWS Security Hub that will contain information about the vulnerable software package, which CodeArtifact Repository it was contained in, and other helpful information such as the Account, Region, time seen, resource ARNs and related vulnerability metadata.
 
 #### Can I automatically remove vulnerable packages? How does that work?
 
