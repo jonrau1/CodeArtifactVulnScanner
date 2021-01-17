@@ -16,9 +16,21 @@ echo "Creating a DynamoDB Table"
 
 aws dynamodb create-table \
     --table-name $tablevar \
-    --attribute-definitions AttributeName=PackageVersion,AttributeType=S AttributeName=CveId,AttributeType=S \
-    --key-schema AttributeName=PackageVersion,KeyType=HASH AttributeName=CveId,KeyType=RANGE \
+    --attribute-definitions AttributeName=PackageName,AttributeType=S AttributeName=PackageVersion,AttributeType=S \
+    --key-schema AttributeName=PackageName,KeyType=HASH AttributeName=PackageVersion,KeyType=RANGE \
     --billing-mode PAY_PER_REQUEST
+    --global-secondary-indexes \
+        "[
+            {
+                \"IndexName\": \"CveId\",
+                \"KeySchema\": [
+                    {\"AttributeName\":\"CveId\",\"KeyType\":\"HASH\"}
+                ],
+                \"Projection\": {
+                    \"ProjectionType\":\"ALL\",
+                }
+            }
+        ]"
 
 echo "Getting the latest NVD 1.1 JSON ZIP Files"
 

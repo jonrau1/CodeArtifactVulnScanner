@@ -48,6 +48,11 @@ Parameters:
       This value will be interpolated into all associated resources created by the solution for easy identification.
       If you change this value please ensure you do not use Numbers or Special Characters as the downstream service
       may not support that as a valid naming convention value.
+  NistModifedJsonFeedUrl:
+    Type: String
+    Default: https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-modified.json.gz
+    Description: >-
+      The URL for the the location of the Modified NIST JSON Feed
 Resources:
   OpenCAVSAnalysisLambdaFunction:
     Type: AWS::Lambda::Function
@@ -87,6 +92,7 @@ Resources:
       Environment:
         Variables:
           NVD_DDB_TABLE: !Ref NVDDynamoDBTableName
+          NVD_MODIFIED_URL: !Ref NistModifedJsonFeedUrl
       Code:
         ZipFile: |
           import os

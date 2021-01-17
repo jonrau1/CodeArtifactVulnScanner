@@ -68,31 +68,41 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -107,24 +117,38 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -171,31 +195,41 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -210,24 +244,38 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -274,31 +322,41 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -313,24 +371,38 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -377,31 +449,41 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -416,24 +498,38 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -480,31 +576,41 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -519,24 +625,38 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -583,31 +703,41 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -622,24 +752,38 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -686,31 +830,41 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -725,24 +879,38 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -789,31 +957,41 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -828,24 +1006,38 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -892,31 +1084,41 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -931,24 +1133,38 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -995,31 +1211,41 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1034,24 +1260,38 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -1098,31 +1338,41 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1137,24 +1387,38 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -1201,31 +1465,41 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1240,24 +1514,38 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -1304,31 +1592,41 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1343,24 +1641,38 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -1407,31 +1719,41 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1446,24 +1768,38 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -1510,31 +1846,41 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1549,24 +1895,38 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -1613,31 +1973,41 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1652,24 +2022,38 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -1716,31 +2100,41 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1755,24 +2149,38 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -1819,31 +2227,41 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1858,24 +2276,38 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -1922,31 +2354,41 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -1961,24 +2403,38 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:
@@ -2025,31 +2481,41 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
                             appCheck = cpeAppRegex.search(cpeUri)
                             if appCheck:
                                 # Remove the Regex statement and split the CPE URI - this will
-                                # allow us the easily pluck out the Package Name and Version
-                                # has Position 0 is the Vendor Name - which we may not care about
+                                # allow us the easily pluck out the Package and Vendor info
                                 stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                 vendor = stripped[0]
-                                package = stripped[1] + '.' + stripped[2]
-                                # some CPE 23 URIs are formatted oddly and make a string such as 
-                                # package:* - this is not useful for us so all we can do is drop it
-                                # TODO: Find a better way (regex?) to parse out the package name & version
-                                if stripped[2] == '*':
-                                    pass
+                                packageName = stripped[1] 
+                                packageVer = stripped[2]
+                                if packageVer == '*':
+                                    try:
+                                        versionStartIncluding = str(cpe['versionStartIncluding'])
+                                    except:
+                                        versionStartIncluding = 'NO_START'
+                                    try:
+                                        versionEndExcluding = str(cpe['versionEndExcluding'])
+                                    except:
+                                        pass
                                 else:
-                                    table.put_item(
-                                        Item={
-                                            'PackageVersion': package,
-                                            'CveId': cveId,
-                                            'CveSourceUrl': cveSrcUrl,
-                                            'CveDescription': cveDesc,
-                                            'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
-                                            'Vendor': vendor
-                                        }
-                                    )
+                                    versionStartIncluding = 'NOT_APPLICABLE'
+                                    versionEndExcluding = 'NOT_APPLICABLE'
+
+                                table.put_item(
+                                    Item={
+                                        'PackageName': packageName,
+                                        'PackageVersion': packageVer,
+                                        'CveId': cveId,
+                                        'VersionStartIncluding': versionStartIncluding,
+                                        'VersionEndExcluding': versionEndExcluding,
+                                        'CveSourceUrl': cveSrcUrl,
+                                        'CveDescription': cveDesc,
+                                        'Reference': cveRef,
+                                        'CvssVector': cvssVector,
+                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                        'CvssSeverity': cvssSeverity,
+                                        'CvssVersion': cvssVersion,
+                                        'Vendor': vendor
+                                    }
+                                )
                             else:
                                 pass
                     # This Except loop will catch CPEs that have another nested list called
@@ -2064,24 +2530,38 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
                                 if appCheck:
                                     stripped = cpeUri.replace('cpe:2.3:a:','').split(':')
                                     vendor = stripped[0]
-                                    package = stripped[1] + '.' + stripped[2]
-                                    if stripped[2] == '*':
-                                        pass
+                                    packageName = stripped[1] 
+                                    packageVer = stripped[2]
+                                    if packageVer == '*':
+                                        try:
+                                            versionStartIncluding = str(cpe['versionStartIncluding'])
+                                        except:
+                                            versionStartIncluding = 'NO_START'
+                                        try:
+                                            versionEndExcluding = str(cpe['versionEndExcluding'])
+                                        except:
+                                            pass
                                     else:
-                                        table.put_item(
-                                            Item={
-                                                'PackageVersion': package,
-                                                'CveId': cveId,
-                                                'CveSourceUrl': cveSrcUrl,
-                                                'CveDescription': cveDesc,
-                                                'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
-                                                'Vendor': vendor
-                                            }
-                                        )
+                                        versionStartIncluding = 'NOT_APPLICABLE'
+                                        versionEndExcluding = 'NOT_APPLICABLE'
+
+                                    table.put_item(
+                                        Item={
+                                            'PackageName': packageName,
+                                            'PackageVersion': packageVer,
+                                            'CveId': cveId,
+                                            'VersionStartIncluding': versionStartIncluding,
+                                            'VersionEndExcluding': versionEndExcluding,
+                                            'CveSourceUrl': cveSrcUrl,
+                                            'CveDescription': cveDesc,
+                                            'Reference': cveRef,
+                                            'CvssVector': cvssVector,
+                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
+                                            'CvssSeverity': cvssSeverity,
+                                            'CvssVersion': cvssVersion,
+                                            'Vendor': vendor
+                                        }
+                                    )
                                 else:
                                     pass
     except Exception as e:

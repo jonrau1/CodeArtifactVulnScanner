@@ -1,6 +1,8 @@
-# CodeArtifactVulnScanner (OpenCAVS)
+# CodeArtifactVulnScanner (OpenCAVS) [**THIS IS A BETA**]
 
 AWS native Static Application Security Testing (SAST) utility to find and eradicate vulnerable software packages stored in AWS CodeArtifact. Built for both real-time distributed and centralized deployments.
+
+**IMPORTANT NOTE! THIS REPOSITORY REPRESENTS AN UNFINISHED PROJECT THAT IS UNDER ACTIVE DEVELOPMENT AND MAY BE SUBJECT TO RANDOM, RAPID CHANGES - USE AT YOUR OWN RISK!!**
 
 ## Table of Contents
 
@@ -85,7 +87,7 @@ This section is meant to list out any general warnings or caveats with this solu
 
 - Only CPE "Applications" (software) are parsed - there will not be any vulnerability information on Hardware or Operation Systems (OS).
 
-- Due to the fact that *all* software packages is parsed (by virtue of ingested the entire NVD) - CVSSv2.0 is used for Vector Strings, Scoring, and Severity. Older CVEs, and thus packages, do not have CVSSv3.1 scoring information. This may be added in at a later date - but will require modifications to the Purging Engine.
+- Due to the fact that *all* software packages is parsed (by virtue of ingested the entire NVD) - CVSSv2.0 is used for Vector Strings, Scoring, and Severity. Older CVEs, and thus packages, do not have CVSSv3.1 scoring information. This may be added in at a later date - but will require modifications to the Purging Engine. On a similar note, some newer vulnerabilities may not have an associated CVSSv2.0 score at all, and thus cannot be removed.
 
 - I ***assume*** There may be mismatches between package names in CPE and what they are called by the vendor - and thus you may either get false positives or undetected vulnerabilities! There is way too much data to analyze to determine how extensive this is in reality.
 
