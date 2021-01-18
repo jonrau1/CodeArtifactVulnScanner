@@ -91,7 +91,7 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -141,7 +141,7 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -236,7 +236,7 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -286,7 +286,7 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -381,7 +381,7 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -431,7 +431,7 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -526,7 +526,7 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -576,7 +576,7 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -671,7 +671,7 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -721,7 +721,7 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -816,7 +816,7 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -866,7 +866,7 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -961,7 +961,7 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -1011,7 +1011,7 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -1106,7 +1106,7 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -1156,7 +1156,7 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -1251,7 +1251,7 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -1301,7 +1301,7 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -1396,7 +1396,7 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -1446,7 +1446,7 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -1541,7 +1541,7 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -1591,7 +1591,7 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -1686,7 +1686,7 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -1736,7 +1736,7 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -1831,7 +1831,7 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -1881,7 +1881,7 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -1976,7 +1976,7 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -2026,7 +2026,7 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -2121,7 +2121,7 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -2171,7 +2171,7 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -2266,7 +2266,7 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -2316,7 +2316,7 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -2411,7 +2411,7 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -2461,7 +2461,7 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -2556,7 +2556,7 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -2606,7 +2606,7 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -2701,7 +2701,7 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -2751,7 +2751,7 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
@@ -2846,7 +2846,7 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
                                     try:
                                         versionEndExcluding = str(cpe['versionEndExcluding'])
                                     except:
-                                        pass
+                                        versionEndExcluding = 'NOT_APPLICABLE'
                                 else:
                                     versionStartIncluding = 'NOT_APPLICABLE'
                                     versionEndExcluding = 'NOT_APPLICABLE'
@@ -2896,7 +2896,7 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
                                         try:
                                             versionEndExcluding = str(cpe['versionEndExcluding'])
                                         except:
-                                            pass
+                                            versionEndExcluding = 'NOT_APPLICABLE'
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'

@@ -63,7 +63,7 @@ Resources:
   OpenCAVSAnalysisLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub '${SolutionVariable}Function'
+      FunctionName: !Sub '${SolutionVariable}VulnAnalyzer'
       Description: >-
         Receives software package information from EventBridge and checks if it is vulnerable. Vulnerable software will
         have a finding created for them in Security Hub - Managed by CloudFormation
@@ -81,15 +81,15 @@ Resources:
   OpenCAVSPurgingLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub '${SolutionVariable}Function'
+      FunctionName: !Sub '${SolutionVariable}PurgingEngine'
       Description: >-
         Receives vulnerable software findings from Security Hub and will remove the affect package based on a set
         threshold and update Security Hub findings - Managed by CloudFormation
-      Handler: analyzer_lambda_function.lambda_handler
+      Handler: purging_lambda_function.lambda_handler
       MemorySize: 256
       Role: !GetAtt OpenCAVSLambdaExecRole.Arn
       Runtime: python3.8
-      Timeout: 121
+      Timeout: 60
       Environment:
         Variables:
           CVSS2_BASE_SCORE_THRESHOLD: !Ref Cvss2BaseScoreThreshold
@@ -119,11 +119,12 @@ Resources:
   OpenCAVSLambdaExecRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub '${SolutionVariable}FunctionRole'
+      RoleName: !Sub '${SolutionVariable}AllLambdaRole'
+      Description: !Sub 'This role is for all Lambda functions within ${SolutionVariable}. Provides permissions to DynamoDB, SecHub, and CodeArtifact - Managed by CloudFormation'
       ManagedPolicyArns: 
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
-      - PolicyName: !Sub '${SolutionVariable}FunctionRolePolicy'
+      - PolicyName: !Sub '${SolutionVariable}AllLambdaRolePolicy'
         PolicyDocument:
           Version: 2012-10-17
           Statement:
@@ -137,7 +138,15 @@ Resources:
               - securityhub:BatchImportFindings
               - securityhub:BatchUpdateFindings
               - codeartifact:DisposePackageVersions
+              - codeartifact:ListPackageVersionDependencies
+              - codeartifact:ListPackages
+              - codeartifact:ListPackageVersionAssets
+              - codeartifact:ListPackageVersions
             Resource: '*'
+          #- Effect: Allow
+          #  Action:
+          #    - sts:AssumeRole
+          #  Resource: '*'
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -158,7 +167,8 @@ Resources:
         detail-type:
           - CodeArtifact Package Version State Change
       State: ENABLED
-      Targets: 
+      Targets:
+      # NOTE TO SELF: Add Malware and Dependency Analyzer targets 
         - 
           Arn: !GetAtt OpenCAVSAnalysisLambdaFunction.Arn
           Id: OpenCAVSAnalysisRule
@@ -176,7 +186,7 @@ Resources:
       Description: >-
         Triggers a Lambda Function that will parse the Modified NVD JSON Feed and write the 
         contents into a DyanmoDB Table of your choosing - Managed by CloudFormation
-      ScheduleExpression: rate(24 hours)
+      ScheduleExpression: rate(1 hour)
       State: ENABLED
       Targets: 
         - 
@@ -195,7 +205,7 @@ Resources:
       Name: !Sub '${SolutionVariable}CodeArtifactPurgingEvent'
       Description: >-
         Triggers a Lambda Function based on vulnerable software packages in Security Hub for the
-        purpose of optional downstream purgining - Managed by CloudFormation
+        purpose of configurable downstream purging - Managed by CloudFormation
       EventPattern: 
         source:
           - aws.securityhub
@@ -206,6 +216,8 @@ Resources:
             ProductFields:
               ProductName:
                 - OpenCAVS
+            Title:
+              - '[OpenCAVS] A software package with a known vulnerability was found in AWS CodeArtifact'
       State: ENABLED
       Targets: 
         - 
@@ -218,3 +230,4 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt OpenCAVSPurgingEventRule.Arn
+  # NOTE TO SELF: Add Malware and Dependency Analyzer Permissions for reach
