@@ -160,6 +160,10 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -301,6 +305,10 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -442,6 +450,10 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -583,6 +595,10 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -724,6 +740,10 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -865,6 +885,10 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1006,6 +1030,10 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1147,6 +1175,10 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1288,6 +1320,10 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1429,6 +1465,10 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1570,6 +1610,10 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1711,6 +1755,10 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1852,6 +1900,10 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1993,6 +2045,10 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -2134,6 +2190,10 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -2275,6 +2335,10 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -2416,6 +2480,10 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -2557,6 +2625,10 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -2698,6 +2770,10 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -2839,6 +2915,10 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
                                             'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
                                             'CvssV2Severity': cvssV2Severity,
                                             'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
