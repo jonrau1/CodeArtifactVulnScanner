@@ -1,6 +1,6 @@
 # CodeArtifactVulnScanner (OpenCAVS) [**THIS IS A BETA**]
 
-AWS native Static Application Security Testing (SAST) utility to find and eradicate vulnerable software packages stored in AWS CodeArtifact. Built for both real-time distributed and centralized deployments.
+AWS native Static Application Security Testing (SAST) / Software Composition Analysis (SCA) utility to find and eradicate vulnerable software packages stored in AWS CodeArtifact. Built for both real-time distributed and centralized deployments.
 
 **IMPORTANT NOTE! THIS REPOSITORY REPRESENTS AN UNFINISHED PROJECT THAT IS UNDER ACTIVE DEVELOPMENT AND MAY BE SUBJECT TO RANDOM, RAPID CHANGES - USE AT YOUR OWN RISK!!**
 
@@ -25,7 +25,7 @@ AWS native Static Application Security Testing (SAST) utility to find and eradic
 
 - All software package versions and their associated Common Vulnerabilities and Exposures (CVEs) is parsed from the [NVD JSON Feeds](https://nvd.nist.gov/vuln/data-feeds#JSON_FEED) by parsing the Common Platform Enumeration (CPE) embedded within.
 
-- Configurable Purging of highly vulnerable packages by Common Vulnerability Scoring System (CVSS) v2.0 Base Score or Severity Label. All non-purged, but vulnerable, packages are pushed through as findings into AWS Security Hub as custom findings.
+- Configurable Purging of highly vulnerable packages by [Common Vulnerability Scoring System](https://nvd.nist.gov/vuln-metrics/cvss) (CVSS) v2.0 and v3.0 Base Scores. All non-purged, but vulnerable, packages are pushed through as findings into AWS Security Hub as custom findings. Purging will be recorded within the Security Hub finding.
 
 ## Solution Architecture
 
@@ -39,7 +39,7 @@ The Centralized setup is also considered an "in-place / local" deployment. This 
 
 1. A one-time data load of all yearly NVD JSON Feed files is performed. All files are downloaded, unzipped, parsed, and loaded sequentially and the files destroyed after the setup script runs. **Note:** Ensure you have at least 1GB free on your storage volume to account for the files.
 
-2. Every 24 hours an Amazon EventBridge Scheduled Rule will invoke a Lambda Function that will downloaded the `Modified` NVD JSON Feed, unzip, parse and load items into a DyanmoDB Table. The key schema of the DynamoDB Table will ensure that updates will be overwrite their pre-existing entries, any unique combination of a Package Name, Package Version, and CVE ID will be added as a new item.
+2. Every hour, an Amazon EventBridge [Scheduled Rule](https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html) will invoke a Lambda Function that will downloaded the `Modified` NVD JSON Feed, unzip, parse and load items into a DyanmoDB Table. The key schema of the DynamoDB Table will ensure that updates will be overwrite their pre-existing entries, any unique combination of a Package Name, Package Version, and CVE ID will be added as a new item.
 
 3. Upon new software packages being pushed to (or updated within) CodeArtifact, an EventBridge Event will invoke a Lambda Function that will parse information about the software package, the Repository information, and other AWS-specific metadata from the Event payload.
 
@@ -47,7 +47,7 @@ The Centralized setup is also considered an "in-place / local" deployment. This 
 
 5. If a software vulnerability is found, a finding containing information about the CVE, CVSS metadata, the software, and the owning Repository is created in the Security Hub tenant.
 
-6. If configured, the Purging Engine within the Lambda Function invoked in Step 3 will remove the vulnerable package from CodeArtifact and an Informational finding will be created in Security Hub noting this.
+6. **WARNING THIS STEP WILL CHANGE SOON!** If configured, the Purging Engine within the Lambda Function invoked in Step 3 will remove the vulnerable package from CodeArtifact and an Informational finding will be created in Security Hub noting this.
 
 ### Distributed Deployment (Multi-Account / Multi-Region)
 
@@ -57,7 +57,7 @@ The following steps describe the event flows for a Distributed setup. The **Secu
 
 1. (**Security Account**) A one-time data load of all yearly NVD JSON Feed files is performed. All files are downloaded, unzipped, parsed, and loaded sequentially and the files destroyed after the setup script runs. **Note:** Ensure you have at least 1GB free on your storage volume to account for the files.
 
-2. (**Security Account**) Every 24 hours an Amazon EventBridge Scheduled Rule will invoke a Lambda Function that will downloaded the `Modified` NVD JSON Feed, unzip, parse and load items into a DyanmoDB Table. The key schema of the DynamoDB Table will ensure that updates will be overwrite their pre-existing entries, any unique combination of a Package Name, Package Version, and CVE ID will be added as a new item.
+2. (**Security Account**) Every hour, an Amazon EventBridge [Scheduled Rule](https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html) will invoke a Lambda Function that will downloaded the `Modified` NVD JSON Feed, unzip, parse and load items into a DyanmoDB Table. The key schema of the DynamoDB Table will ensure that updates will be overwrite their pre-existing entries, any unique combination of a Package Name, Package Version, and CVE ID will be added as a new item.
 
 3. (**Member Account**) Upon new software packages being pushed to (or updated within) CodeArtifact, an EventBridge Event will invoke a Lambda Function that will parse information about the software package, the Repository information, and other AWS-specific metadata from the Event payload.
 
@@ -65,7 +65,7 @@ The following steps describe the event flows for a Distributed setup. The **Secu
 
 5. (**Member Account**) If a software vulnerability is found, a finding containing information about the CVE, CVSS metadata, the software, and the owning Repository is created in the Member Account's Security Hub tenant.
 
-6. (**Member Account**) If configured, the Purging Engine within the Lambda Function invoked in Step 3 will remove the vulnerable package from CodeArtifact and an Informational finding will be created in Security Hub noting this.
+6. (**Member Account**) **WARNING THIS STEP WILL CHANGE SOON!**  If configured, the Purging Engine within the Lambda Function invoked in Step 3 will remove the vulnerable package from CodeArtifact and an Informational finding will be created in Security Hub noting this.
 
 7. (**Security Account**) All findings (in their Home Region) are pushed transparently into the Security Hub Master account. You can use this to collect all information about purged packages and vulnerable software in your organization.
 
@@ -86,8 +86,6 @@ In the future, it is planned to add various other features such as Business Inte
 This section is meant to list out any general warnings or caveats with this solution and is subject to change as the project matures.
 
 - Only CPE "Applications" (software) are parsed - there will not be any vulnerability information on Hardware or Operation Systems (OS).
-
-- Due to the fact that *all* software packages is parsed (by virtue of ingested the entire NVD) - CVSSv2.0 is used for Vector Strings, Scoring, and Severity. Older CVEs, and thus packages, do not have CVSSv3.1 scoring information. This may be added in at a later date - but will require modifications to the Purging Engine. On a similar note, some newer vulnerabilities may not have an associated CVSSv2.0 score at all, and thus cannot be removed.
 
 - I ***assume*** There may be mismatches between package names in CPE and what they are called by the vendor - and thus you may either get false positives or undetected vulnerabilities! There is way too much data to analyze to determine how extensive this is in reality.
 
@@ -157,17 +155,39 @@ OpenCAVS provides a mechanism with which to locate known vulnerable software pac
 
 Optionally, you can configure this solution to purge vulnerable packages in CodeArtifact based on a specific CVSS score or stated severity level. This solution can be deployed for a centralized CodeArtifact model or to support a distributed model across many Accounts, Regions, and CodeArtifact Repositories.
 
+#### What is Software Composition Analysis (SCA)?
+
+SCA is a type of application security testing tool / technique to located vulnerabiliites within a software package as well as provide a software asset inventory, dependency tracking, license compliance and expose those data points to end users. In that light, SCA is more than just a security tool, many personas in an organization can make use of the tool to answer questions such as "What software do we use?", "Do we have any Apache 2.0 or GPLv3 licenses in use?", "How reliant is our code base on open source software (OSS)"?, or "What security or privacy issues are introduced from our codebase?".
+
+Something more formal, as per [Whitesource Software](https://resources.whitesourcesoftware.com/blog-whitesource/software-composition-analysis): "Software Composition Analysis (SCA) is a segment of the application security testing (AST) tool market that deals with managing open source component use. SCA tools perform automated scans of an application’s code base, including related artifacts such as containers and registries, to identify all open source components, their license compliance data, and any security vulnerabilities. In addition to providing visibility into open source use, some SCA tools also help fix open source vulnerabilities through prioritization and auto remediation."
+
+#### What is Static Application Security Testing (SAST)?
+
+SAST is a type of application security testing tool that analyzes source code and dependencies (binaries, libraries, etc.) for known security vulnerabilities. It does not examine a compiled / running application or package and is a "first line of defense" sort of tool that has some overlap with a SCA Tool.
+
+Something more formal, as per [Gartner](https://www.gartner.com/en/information-technology/glossary/static-application-security-testing-sast): "Static application security testing (SAST) is a set of technologies designed to analyze application source code, byte code and binaries for coding and design conditions that are indicative of security vulnerabilities. SAST solutions analyze an application from the “inside out” in a nonrunning state."
+
+#### What commercial tool(s) are similar to OpenCAVS?
+
+Any SAST or SCA tool within the application security (AppSec) segment is comprable to the features of this tool, though commercial offerings are typically more robust and often enhance or enrich their solutions with their own internal security research, threat intelligence, and/or software inventories. Tools such as these include offerings from [Snyk.io](https://snyk.io/), [WhiteSource Software](https://www.whitesourcesoftware.com/), [Checkmarx](https://www.checkmarx.com/), or [Micro Focus Fortify](https://www.microfocus.com/en-us/products/static-code-analysis-sast/overview).
+
+It is important to note that those offerings (and others in the segment) are often very robust and made to run on top of a variety of artifact repositories or within CI/CD pipelines, they can perform scans based on dependencies located in your OS that correspond to a specific language such as NodeJS's `package_lock.json` or Python `wheels`. OpenCAVS is entirely dependent on CodeArtifact's schema of software inventory as well as running in an "out-of-pipeline" mode in reaction to packages being pushed to CodeArtifact.
+
+The author reccomends that you use additional open source tools such as Bandit for Python or GoSec for Go, and other application security testing tools such as secrets scanning, dependency management, and Dynamic Application Security Testing (DAST) products -- a "defense in depth" strategy is needed for a succesful AppSec program but above all well-trained and security-aware developers with a culture that promotes innovation and doesn't use software vulnerabilities as a hammer is the best fit.
+
 #### Where is information about software packages and their associated vulnerabilities sourced from?
 
 All vulnerability, software package, and associated metadata (references, CVSS scoring information, etc.) is parsed from NIST's NVD JSON Feeds. A one-time load of all Yearly feeds is performed, and a Lambda Function invoked on a schedule will perform additions or updates to files based on a specialized `Modified` feed from the NVD JSON Feeds.
 
 #### What is the process flow for evaluating vulnerabilities? How does the solution account for Software Package Versions that have Patch or Beta versions noted (e.g., 1.22.1.4?)?
 
-TODO: Process Flow
+Simply, if there any software package versions that cannot be converted to a `float` are forced converted into one by creating a new `float` from the Major and Minor Version (thus dropping any Patch, Beta, or other version number). This is noted several time in the codebase as a workaround which may produce an unknown amount of false positives or false negatives. At this time, that functionality will not be modified.
+
+TODO: Add process flow
 
 #### What vulnerability metadata is provided within this solution?
 
-The ID of the CVE, the first reference link, a CVE description, the CVSSv2.0 Vector String, CVSSv2.0 Base Score, CVSSv2.0 Severity Label, and the Package Name, Package Version are parsed from the NVD JSON Feeds. In the future, additional metadata such as CVSSv3.1 scoring information may be included.
+The ID of the CVE, the first reference link, a CVE description, the CVSSv2.0 & CVSSv3.0 Vector String, CVSSv2.0 & CVSSv3.0 Base Score, CVSSv2.0 & CVSSv3.0 Severity Label, and the Package Name, Package Version are parsed from the NVD JSON Feeds.
 
 #### How are software vulnerabilities detected?
 
@@ -179,15 +199,17 @@ Upon detection of a vulnerable software package, a finding will be created in AW
 
 #### Can I automatically remove vulnerable packages? How does that work?
 
-Yes. If configured within the setup script for either deployment option, the Lambda function that performs vulnerability analysis of the software packages will optionally remove (aka Purge) the software package version from its upstream CodeArtifact Repository by using the CodeArtifact [`DisposePackageVersions`](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/codeartifact.html#CodeArtifact.Client.dispose_package_versions) API.
+Yes. Upon vulnerable software being discovered, findings will be created in AWS Security Hub, and these findings will in turn trigger another downstream Lambda Function via the EventBridge integration that Security Hub has. Depending on a threshold for both CVSSv2.0 and CVSSv3.0, the finding will be purged, it is important to set thresholds on both CVSS scoring versions as not every CVE will have both available. The removal (aka Purge) will happen by using the CodeArtifact [`DisposePackageVersions`](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/codeartifact.html#CodeArtifact.Client.dispose_package_versions) API.
 
 #### What is the process flow for the Purging Engine?
 
-TODO: Process Flow
+A Lambda Function will be triggered upon vulnerable software package findings being created in Security Hub. During setup, you will have provided values to set as thresholds for both CVSSv2.0 and CVSSv3.0, which will be evaluated in that order. If the CVSS Base Score is greater than or equal to the threshold you set, the software package version will be removed from CodeArtifact and the finding in Security Hub will be updated.
+
+TODO: Add process flow.
 
 #### How can I keep track of software packages that were removed via automation?
 
-If Purging is configured, these events are also sent to Security Hub as informational findings. You can use the built-in visualization functionality, Insights, in Security Hub or use a BI tool such as Amazon QuickSight to keep track of these events and software packages to provide as data points to development teams so they can push changes to their applications' requirements.
+If a vulnerable software package finding is pushed into AWS Security Hub, the finding will be updated by the downstream Purging mechanism to note that it was removed and the timestamp of the removal will be recorded in the Security Hub finding's schema using the `UpdatedAt` timestamp value.
 
 #### How can I report on software vulnerabilities contained in CodeArtifact?
 
@@ -197,9 +219,13 @@ You can use Security Hub Insights or perform ingestion into another BI tool from
 
 No, not as designed. Any modifications to this solution for purpose of scanning dependencies within CodeCommit are out of scope but could perhaps be added in scope in the future. I do reccomend using [Amazon CodeGuru Reviewer](https://aws.amazon.com/codeguru/) (if you use Python or Java) though, it has some built in [Security](https://aws.amazon.com/about-aws/whats-new/2020/12/amazon-codeguru-reviewer-announces-security-detectors-improve-code-security/) checks.
 
-#### Why is CVSSv2.0 used instead of CVSSv3.1?
+#### Why is both CVSSv2.0 and CVSSv3.0 recorded?
 
-Due to the age of CVEs, some existed before CVSSv3.1 was released. NIST does not appear to perform retrospective updates of the CVSS Scoring and so CVSSv2.0 is used as the primary vulnerability severity assessment. In the future CVSSv3.1 with be added as another bit of metadata to be collected.
+Due to the age of CVEs, some existed before CVSSv3.0 was released. NIST does not appear to perform retrospective updates of the CVSS Scoring and so both versions of CVSS are collected.
+
+#### I have a vulnerable software package that was not purged! Why?
+
+Some CVEs do not have any CVSS scoring information recorded at all, and thus, purging will not work - these types of CVEs are hardcoded with a `0` CVSS Base Score to avoid schema issues within DynamoDB.
 
 #### Can I perform vulnerability analysis of package dependencies?
 
@@ -213,13 +239,15 @@ Not at this time to either part of the question. In the future, this feature wil
 
 Not as configured, you should probably use [JFrog XRAY](https://jfrog.com/xray/) though, if you're already setting your money on fire to use Artifactory you obviously don't care about it to begin with.
 
-#### Can I use this solution to find vulnerable packages on my Operating System?
-
-Theoretically, yes. If you had EC2 Instances managed by Systems Manager, you could use the Inventory APIs to retrieve software installations and detect if they have any vulnerabilities. You could do similar on container images as well using utilities such as the Python `docker` module. That said, there are built-in vulnerability scanning utilities built into AWS Systems Manager or you can use Amazon Inspector. Amazon Elastic Container Registry (ECR) also has a built-in vulnerability scanner based on ClairOS, but there are other open-source projects such as Trivy or Anchore that fit the container vulnerability scanning utility. It is also important to note that any Operating System or Hardware related vulnerabilities are not ingested into DynamoDB with respect to the intended scope of OpenCAVS.
-
 #### How is vulnerability information maintained?
 
-Every 24 hours an Amazon EventBridge Scheduled Rule will invoke a Lambda Function that will download the `Modified` NVD JSON Feed and add the information into DynamoDB. Existing items will be overwritten based on their Software Package and CVE ID pair; new items will just be inserted like a regular item into the table. NIST maintains a 2-hour SLA to push any updates into the `Modified` feed based on if there are actually any changes. These changes may not include ones that are relevant to this solution (such as Common Weaknesses and Exploits (CWE) or reference metadata).
+Every hour an Amazon EventBridge Scheduled Rule will invoke a Lambda Function that will download the `Modified` NVD JSON Feed and add the information into DynamoDB. Existing items will be overwritten based on their Software Package and CVE ID pair; new items will just be inserted like a regular item into the table. NIST maintains a 2-hour SLA to push any updates into the `Modified` feed based on if there are actually any changes. These changes may not include ones that are relevant to this solution (such as Common Weaknesses and Exploits (CWE) or reference metadata).
+
+Running that Lambda function every hour ensures you will not likely miss an updated, as during that 2-hour window if there are any changes the older updated entries will be removed from the file.
+
+#### How can I ensure I stay in sync with upstream NVD Changes in case of Lambda failures due to transient errors or Region outages?
+
+The only way to ensure you will stay 100% up-to-date in the event that AWS Lambda goes down, or some other failure prevents you from downloading and parsing the payloads, is to run the manual load from another location.
 
 #### I want to export the package vulnerability information; how can I do that?
 
@@ -227,9 +255,20 @@ A Python script is provided in the `/exports` directory which will read out the 
 
 #### How much does this solution cost to run?
 
-It is dependent on how many Regions and Accounts you have it deployed - but for a single load of DynamoDB it will cost $XXXXX due to Write Consumption Units (WCU) used over a period of time.
+**TL;DR** This solution will cost less than $10/Month to run under normal circumstances (500K evaluations/Mth, 100K Security Hub Findings)
 
-TODO ADD CALCULATOR
+An exact estimation will be hard to produce without historical numbers, to perform your own cost analysis you will need to factor in how many Accounts and across how many Regions this solution will be deployed. To perform you own estimate you will need to use the [AWS Pricing Calculator](https://calculator.aws/#/createCalculator) and the following pricing pages per service used:
+
+  - [Lambda Pricing](https://aws.amazon.com/lambda/pricing/)
+  - [DynamoDB Pricing](https://aws.amazon.com/dynamodb/pricing/)
+  - [EventBridge Pricing](https://aws.amazon.com/eventbridge/pricing/)
+  - [Security Hub Pricing](https://aws.amazon.com/security-hub/pricing/)
+
+The most common scenario based on my testing is the initial setup will be the most expensive - assuming 800K entries for loading all of the vulnerable software packages (as of 17 JAN 2021) with an average size of 1.25KB that comes out to 1GB/Mth of Storage ($0.25) and ~$2.00 for ~1.6M WCUs for a total of $2.25.
+
+On average there are ~750 entries within the `Modified` NVD feed, if you performed a load every hour as configured, that is an additional $1.35/Month (~1M WCUs). If you performed 500K/Month strongly consistent lookups against DynamoDB (OpenCAVS used `Scan()` by default) that will be $0.13/Month. Assuming 720 Lambda requests lasting ~30 seconds each to perform this load, that falls well under the free tier. If you did an additional 2M invocations (well above what we estimated for DynamoDB Reads) that would cost $0.20/Month.
+
+The last piece is EventBridge ($1/Million Events - you will likely stay far below that) and Security Hub. Assuming 500K evaluations, and 20% are vulnerable packages, that is 100K Security Hub Findings/Month which are billed at $0.00003 per Finding - that comes out to $3. Assuming you hit 1M Events - **the above estimate would cost $7.93/Month** - as the DynamoDB Table will still be in a Single Region and a Single Account for the Distributed or Centralized Deployments.
 
 ## Contributing
 

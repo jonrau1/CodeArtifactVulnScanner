@@ -48,15 +48,25 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -96,10 +106,14 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -142,10 +156,10 @@ with open('./nvdcve-1.1-2002.json') as cve2002json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -175,15 +189,25 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -223,10 +247,14 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -269,10 +297,10 @@ with open('./nvdcve-1.1-2003.json') as cve2003json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -302,15 +330,25 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -350,10 +388,14 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -396,10 +438,10 @@ with open('./nvdcve-1.1-2004.json') as cve2004json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -429,15 +471,25 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -477,10 +529,14 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -523,10 +579,10 @@ with open('./nvdcve-1.1-2005.json') as cve2005json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -556,15 +612,25 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -604,10 +670,14 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -650,10 +720,10 @@ with open('./nvdcve-1.1-2006.json') as cve2006json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -683,15 +753,25 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -731,10 +811,14 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -777,10 +861,10 @@ with open('./nvdcve-1.1-2007.json') as cve2007json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -810,15 +894,25 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -858,10 +952,14 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -904,10 +1002,10 @@ with open('./nvdcve-1.1-2008.json') as cve2008json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -937,15 +1035,25 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -985,10 +1093,14 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -1031,10 +1143,10 @@ with open('./nvdcve-1.1-2009.json') as cve2009json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1064,15 +1176,25 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -1112,10 +1234,14 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -1158,10 +1284,10 @@ with open('./nvdcve-1.1-2010.json') as cve2010json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1191,15 +1317,25 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -1239,10 +1375,14 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -1285,10 +1425,10 @@ with open('./nvdcve-1.1-2011.json') as cve2011json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1318,15 +1458,25 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -1366,10 +1516,14 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -1412,10 +1566,10 @@ with open('./nvdcve-1.1-2012.json') as cve2012json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1445,15 +1599,25 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -1493,10 +1657,14 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -1539,10 +1707,10 @@ with open('./nvdcve-1.1-2013.json') as cve2013json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1572,15 +1740,25 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -1620,10 +1798,14 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -1666,10 +1848,10 @@ with open('./nvdcve-1.1-2014.json') as cve2014json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1699,15 +1881,25 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -1747,10 +1939,14 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -1793,10 +1989,10 @@ with open('./nvdcve-1.1-2015.json') as cve2015json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1826,15 +2022,25 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -1874,10 +2080,14 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -1920,10 +2130,10 @@ with open('./nvdcve-1.1-2016.json') as cve2016json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -1953,15 +2163,25 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -2001,10 +2221,14 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -2047,10 +2271,10 @@ with open('./nvdcve-1.1-2017.json') as cve2017json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -2080,15 +2304,25 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -2128,10 +2362,14 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -2174,10 +2412,10 @@ with open('./nvdcve-1.1-2018.json') as cve2018json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -2207,15 +2445,25 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -2255,10 +2503,14 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -2301,10 +2553,10 @@ with open('./nvdcve-1.1-2019.json') as cve2019json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -2334,15 +2586,25 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -2382,10 +2644,14 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -2428,10 +2694,10 @@ with open('./nvdcve-1.1-2020.json') as cve2020json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -2461,15 +2727,25 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
             except:
                 cveDesc = 'NONE_PROVIDED'
             try:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
             except:
-                cvssVersion = 'CVSSv2.0'
-                cvssVector = 'Unknown'
-                cvssScore = float(0.0)
-                cvssSeverity = 'Unknown'
+                cvssV2Version = 'CVSSv2.0'
+                cvssV2Vector = 'Unknown'
+                cvssV2Score = float(0.0)
+                cvssV2Severity = 'Unknown'
+            try:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+            except:
+                cvssV3Version = 'CVSSv3.0'
+                cvssV3Vector = 'Unknown'
+                cvssV3Score = float(0.0)
+                cvssV3Severity = 'Unknown'
             # If Nodes list is empty that means it's likely a revoked CVE
             if str(x['configurations']['nodes']) == '[]':
                 pass
@@ -2509,10 +2785,14 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
                                         'CveSourceUrl': cveSrcUrl,
                                         'CveDescription': cveDesc,
                                         'Reference': cveRef,
-                                        'CvssVector': cvssVector,
-                                        'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                        'CvssSeverity': cvssSeverity,
-                                        'CvssVersion': cvssVersion,
+                                        'CvssV2Vector': cvssV2Vector,
+                                        'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                        'CvssV2Severity': cvssV2Severity,
+                                        'CvssV2Version': cvssV2Version,
+                                        'CvssV3Vector': cvssV3Vector,
+                                        'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                        'CvssV3Severity': cvssV3Severity,
+                                        'CvssV3Version': cvssV3Version,
                                         'Vendor': vendor
                                     }
                                 )
@@ -2555,10 +2835,10 @@ with open('./nvdcve-1.1-2021.json') as cve2021json:
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
                                             'Vendor': vendor
                                         }
                                     )

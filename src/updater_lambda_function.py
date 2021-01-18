@@ -27,13 +27,12 @@ nvdFeedUrl = os.environ['NVD_MODIFIED_URL']
 table = dynamodb.Table(os.environ['NVD_DDB_TABLE'])
 
 def lambda_handler(event, context):
-
     try:
         urllib.request.urlretrieve(nvdFeedUrl, '/tmp/modified-feed.json.gz')
     except Exception as e:
         print('Failed to download latest feed! Exiting!')
         raise e
-    
+
     with gzip.open('/tmp/modified-feed.json.gz') as nistmodjson:
         nistmod = json.load(nistmodjson)
         try:
@@ -50,15 +49,25 @@ def lambda_handler(event, context):
                 except:
                     cveDesc = 'NONE_PROVIDED'
                 try:
-                    cvssVersion = 'CVSSv2.0'
-                    cvssVector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
-                    cvssScore = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
-                    cvssSeverity = str(x['impact']['baseMetricV2']['severity'])
+                    cvssV2Version = 'CVSSv2.0'
+                    cvssV2Vector = str(x['impact']['baseMetricV2']['cvssV2']['vectorString'])
+                    cvssV2Score = float(x['impact']['baseMetricV2']['cvssV3']['baseScore'])
+                    cvssV2Severity = str(x['impact']['baseMetricV2']['severity'])
                 except:
-                    cvssVersion = 'CVSSv2.0'
-                    cvssVector = 'Unknown'
-                    cvssScore = float(0.0)
-                    cvssSeverity = 'Unknown'
+                    cvssV2Version = 'CVSSv2.0'
+                    cvssV2Vector = 'Unknown'
+                    cvssV2Score = float(0.0)
+                    cvssV2Severity = 'Unknown'
+                try:
+                    cvssV3Version = 'CVSSv3.0'
+                    cvssV3Vector = str(x['impact']['baseMetricV3']['cvssV3']['vectorString'])
+                    cvssV3Score = float(x['impact']['baseMetricV3']['cvssV3']['baseScore'])
+                    cvssV3Severity = str(x['impact']['baseMetricV3']['cvssV3']['baseSeverity'])
+                except:
+                    cvssV3Version = 'CVSSv3.0'
+                    cvssV3Vector = 'Unknown'
+                    cvssV3Score = float(0.0)
+                    cvssV3Severity = 'Unknown'
                 # If Nodes list is empty that means it's likely a revoked CVE
                 if str(x['configurations']['nodes']) == '[]':
                     pass
@@ -87,7 +96,7 @@ def lambda_handler(event, context):
                                     else:
                                         versionStartIncluding = 'NOT_APPLICABLE'
                                         versionEndExcluding = 'NOT_APPLICABLE'
-
+    
                                     table.put_item(
                                         Item={
                                             'PackageName': packageName,
@@ -98,10 +107,14 @@ def lambda_handler(event, context):
                                             'CveSourceUrl': cveSrcUrl,
                                             'CveDescription': cveDesc,
                                             'Reference': cveRef,
-                                            'CvssVector': cvssVector,
-                                            'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                            'CvssSeverity': cvssSeverity,
-                                            'CvssVersion': cvssVersion,
+                                            'CvssV2Vector': cvssV2Vector,
+                                            'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                            'CvssV2Severity': cvssV2Severity,
+                                            'CvssV2Version': cvssV2Version,
+                                            'CvssV3Vector': cvssV3Vector,
+                                            'CvssV3Score': json.loads(json.dumps(cvssV3Score), parse_float=Decimal),
+                                            'CvssV3Severity': cvssV3Severity,
+                                            'CvssV3Version': cvssV3Version,
                                             'Vendor': vendor
                                         }
                                     )
@@ -133,7 +146,7 @@ def lambda_handler(event, context):
                                         else:
                                             versionStartIncluding = 'NOT_APPLICABLE'
                                             versionEndExcluding = 'NOT_APPLICABLE'
-
+    
                                         table.put_item(
                                             Item={
                                                 'PackageName': packageName,
@@ -144,10 +157,10 @@ def lambda_handler(event, context):
                                                 'CveSourceUrl': cveSrcUrl,
                                                 'CveDescription': cveDesc,
                                                 'Reference': cveRef,
-                                                'CvssVector': cvssVector,
-                                                'CvssScore': json.loads(json.dumps(cvssScore), parse_float=Decimal),
-                                                'CvssSeverity': cvssSeverity,
-                                                'CvssVersion': cvssVersion,
+                                                'CvssV2Vector': cvssV2Vector,
+                                                'CvssV2Score': json.loads(json.dumps(cvssV2Score), parse_float=Decimal),
+                                                'CvssV2Severity': cvssV2Severity,
+                                                'CvssV2Version': cvssV2Version,
                                                 'Vendor': vendor
                                             }
                                         )
