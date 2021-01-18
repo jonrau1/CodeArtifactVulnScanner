@@ -25,15 +25,6 @@ Parameters:
     Description: >-
       The name of the DyanmoDB Table that contains all of the software package vulnerability information. PLEASE ENSURE
       that it is located in the same Region, Account and Partition you are deploying this solution to!
-  PurgingEngineFlag:
-    Type: String
-    Default: NO_PURGE
-    Description: >-
-      This flag is passed as an environment variable to your Lambda Function and if set to PURGE an optional function
-      within the underlying code will remove vulnerable software packages above a specified CVSSv2.0 Base Score threshold.
-    AllowedValues: 
-      - NO_PURGE
-      - PURGE
   Cvss2BaseScoreThreshold:
     Type: Number
     MinValue: 0
@@ -42,10 +33,20 @@ Parameters:
     ConstraintDescription: >-
       The value must be an Integer or Float between 0 and 10.0!
     Description: >-
-      If PURGE is set for your OpenCAVS Lambda Function, this value is passed as an environment variable and represents
-      the threshold at which the function will remove vulnerable software packages. E.g., if you set this value to 6.9 then
-      any vulnerability with a CVSSv2.0 Base Score of 6.9 or Above (Greater Than Equal To) will cause the associated software
-      package to be removed from CodeArtifact
+      This value represents the threshold at which the function will remove vulnerable software packages. 
+      E.g., if you set this value to 6.9 then any vulnerability with a CVSSv2.0 Base Score of 6.9 or Above 
+      (Greater Than Equal To) will cause the associated software package to be removed from CodeArtifact
+  Cvss3BaseScoreThreshold:
+    Type: Number
+    MinValue: 0
+    MaxValue: 10.0
+    Default: 10.0
+    ConstraintDescription: >-
+      The value must be an Integer or Float between 0 and 10.0!
+    Description: >-
+      This value represents the threshold at which the function will remove vulnerable software packages. 
+      E.g., if you set this value to 6.9 then any vulnerability with a CVSSv3.0 Base Score of 6.9 or Above 
+      (Greater Than Equal To) will cause the associated software package to be removed from CodeArtifact
   SolutionVariable:
     Type: String
     Default: OpenCAVSCentralized
@@ -64,8 +65,8 @@ Resources:
     Properties:
       FunctionName: !Sub '${SolutionVariable}Function'
       Description: >-
-        Receives software package information from EventBridge and checks if it is vulnerable. Will optionally purge
-        vulnerable packages above a certain threshold - Managed by CloudFormation
+        Receives software package information from EventBridge and checks if it is vulnerable. Vulnerable software will
+        have a finding created for them in Security Hub - Managed by CloudFormation
       Handler: analyzer_lambda_function.lambda_handler
       MemorySize: 256
       Role: !GetAtt OpenCAVSLambdaExecRole.Arn
@@ -73,12 +74,29 @@ Resources:
       Timeout: 121
       Environment:
         Variables:
-          PURGE_ENABLED: !Ref PurgingEngineFlag
-          CVSS2_BASE_SCORE_THRESHOLD: !Ref Cvss2BaseScoreThreshold
           NVD_DDB_TABLE: !Ref NVDDynamoDBTableName
       Code:
         S3Bucket: !Ref LambdaCodeBucket
         S3Key: AnalysisLambdaPackage.zip
+  OpenCAVSPurgingLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${SolutionVariable}Function'
+      Description: >-
+        Receives vulnerable software findings from Security Hub and will remove the affect package based on a set
+        threshold and update Security Hub findings - Managed by CloudFormation
+      Handler: analyzer_lambda_function.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt OpenCAVSLambdaExecRole.Arn
+      Runtime: python3.8
+      Timeout: 121
+      Environment:
+        Variables:
+          CVSS2_BASE_SCORE_THRESHOLD: !Ref Cvss2BaseScoreThreshold
+          CVSS3_BASE_SCORE_THRESHOLD: !Ref Cvss3BaseScoreThreshold
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: PurgeLambdaPackage.zip
   OpenCAVSVulnUpdaterLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -117,6 +135,8 @@ Resources:
           - Effect: Allow
             Action:
               - securityhub:BatchImportFindings
+              - securityhub:BatchUpdateFindings
+              - codeartifact:DisposePackageVersions
             Resource: '*'
       AssumeRolePolicyDocument:
         Version: 2012-10-17
@@ -169,3 +189,32 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt OpenCAVSVulnUpdaterScheduledRule.Arn
+  OpenCAVSPurgingEventRule: 
+    Type: AWS::Events::Rule
+    Properties: 
+      Name: !Sub '${SolutionVariable}CodeArtifactPurgingEvent'
+      Description: >-
+        Triggers a Lambda Function based on vulnerable software packages in Security Hub for the
+        purpose of optional downstream purgining - Managed by CloudFormation
+      EventPattern: 
+        source:
+          - aws.securityhub
+        detail-type:
+          - Security Hub Findings - Imported
+        detail:
+          findings:
+            ProductFields:
+              ProductName:
+                - OpenCAVS
+      State: ENABLED
+      Targets: 
+        - 
+          Arn: !GetAtt OpenCAVSPurgingLambdaFunction.Arn
+          Id: OpenCAVSPurgingRule
+  OpenCAVSAnalyzerCWEPermissions: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref OpenCAVSPurgingLambdaFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt OpenCAVSPurgingEventRule.Arn

@@ -195,7 +195,9 @@ Upon invocation from Amazon EventBridge, a Lambda Function will perform a `Scan(
 
 #### Where is information about detected software vulnerabilities stored?
 
-Upon detection of a vulnerable software package, a finding will be created in AWS Security Hub that will contain information about the vulnerable software package, which CodeArtifact Repository it was contained in, and other helpful information such as the Account, Region, time seen, resource ARNs and related vulnerability metadata.
+Upon detection of a vulnerable software package, a finding will be created in AWS Security Hub that will contain information about the vulnerable software package, which CodeArtifact Repository it was contained in, and other helpful information such as the Account, Region, time seen, resource ARNs and related vulnerability metadata. An example of the finding is shown below:
+
+![Security Hub Finding](./img/security-hub-finding.jpg)
 
 #### Can I automatically remove vulnerable packages? How does that work?
 
