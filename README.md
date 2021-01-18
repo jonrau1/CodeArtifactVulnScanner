@@ -21,11 +21,13 @@ AWS native Static Application Security Testing (SAST) / Software Composition Ana
 
 ## Synopsis
 
-- 100% AWS Serverless implementation of a Static Application Security Testing (SAST) / Software Code Analysis (SCA) purpose built for AWS CodeArtifact. Determine vulnerabilities in code packages by using the [National Institute of Standards and Technology](https://www.nist.gov/) (NIST) [National Vulnerability Database](https://nvd.nist.gov/search) (NVD).
+- 100% AWS Serverless implementation of a Static Application Security Testing (SAST) / Software Code Analysis (SCA) and Anti-Virus (AV) purpose-built for AWS CodeArtifact. Determine vulnerabilities in code packages by using the [National Institute of Standards and Technology](https://www.nist.gov/) (NIST) [National Vulnerability Database](https://nvd.nist.gov/search) (NVD).
 
-- All software package versions and their associated Common Vulnerabilities and Exposures (CVEs) is parsed from the [NVD JSON Feeds](https://nvd.nist.gov/vuln/data-feeds#JSON_FEED) by parsing the Common Platform Enumeration (CPE) embedded within.
+- All software package versions and their associated Common Vulnerabilities and Exposures (CVEs) are parsed from the [NVD JSON Feeds](https://nvd.nist.gov/vuln/data-feeds#JSON_FEED) by parsing the Common Platform Enumeration (CPE) included within.
 
 - Configurable Purging of highly vulnerable packages by [Common Vulnerability Scoring System](https://nvd.nist.gov/vuln-metrics/cvss) (CVSS) v2.0 and v3.0 Base Scores. All non-purged, but vulnerable, packages are pushed through as findings into AWS Security Hub as custom findings. Purging will be recorded within the Security Hub finding.
+
+- Real-time vulnerability analysis of software package dependencies is performed in addition to the upstream package, additionally, Anti-Virus/Anti-Malware (AV/AM) is performed by assesing software package Assets' SHA1 and SHA256 hashes against [Team Cymru's Malware Hash Registry (MHR)](https://team-cymru.com/community-services/mhr/).
 
 ## Solution Architecture
 
@@ -34,6 +36,8 @@ Two different models of deployment are provided at this time. Please see the **D
 ### Centralized Deployment (Single-Account / Single-Region)
 
 ![Centralized Architecture](./img/centralized-repository-architecture.jpg)
+
+**NOTE:** This architecture and associated steps will be updated to reflect dependency and anti-malware flows.
 
 The Centralized setup is also considered an "in-place / local" deployment. This is best suited for smaller AWS Accounts who may be using CodeArtifact in a limited capacity, or for Organizations who want to maintain a single location where CodeArtifact workloads are run. **Note:** If you have different Regions, deploying this solution to them will create their own DynamoDB Tables and manually load the entire NVD into it - you are responsbile for modifying the solution to be able to run Multi-Region.
 
@@ -65,9 +69,21 @@ The following steps describe the event flows for a Distributed setup. The **Secu
 
 5. (**Member Account**) If a software vulnerability is found, a finding containing information about the CVE, CVSS metadata, the software, and the owning Repository is created in the Member Account's Security Hub tenant.
 
-6. (**Member Account**) **WARNING THIS STEP WILL CHANGE SOON!**  If configured, the Purging Engine within the Lambda Function invoked in Step 3 will remove the vulnerable package from CodeArtifact and an Informational finding will be created in Security Hub noting this.
+6. (**Member Account**) Upon vulnerable software package findings being sent to Security Hub, another EventBridge Event will invoke a "Purging Engine" Lambda Function which will remove the package from the Repository and update the finding in Security Hub with the [`BatchUpdateFindings`](https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_BatchUpdateFindings.html) API
 
-7. (**Security Account**) All findings (in their Home Region) are pushed transparently into the Security Hub Master account. You can use this to collect all information about purged packages and vulnerable software in your organization.
+7. (**Member Account**) The EventBridge Event from Step 3 will invoke a Malware Analysis Lambda Function which will use the [`ListPackageVersionAssets`](https://docs.aws.amazon.com/codeartifact/latest/APIReference/API_ListPackageVersionAssets.html) API to retrieve a list of all Assets and their associated hashes.
+
+8. (**Member Account**) The Malware Analysis Lambda Function from Step 7 will submit Package Asset Hashes to [Team Cymru's Malware Hash Registry (MHR)](https://team-cymru.com/community-services/mhr/) to check if they are associated with any known virus or malware samples. If so, a new finding type will be created in Security Hub.
+
+9. (**Member Account**) The EventBridge Event from Step 3 will invoke a Dependency Vuln Analysis Lambda Function which will retrieve the software package dependencies of the new/updated software package using the [ListPackageVersionDependencies](https://docs.aws.amazon.com/codeartifact/latest/APIReference/API_ListPackageVersionDependencies.html#API_ListPackageVersionDependencies_ResponseElements) API.
+
+10. (**Member Account**) / (**Security Account**) The Dependency Vuln Analysis Lambda Function from Step 9 will attempt to Assume a Role in the Security Account which will give it permissions to `Scan()` the DynamoDB Table to retrieve information about the dependencies and associated vulnerability metadata.
+
+11. (**Member Account**) If a vulnerability in any of the dependencies is found, the Dependency Vuln Analysis Lambda Function from Step 9 will create another new Security Hub finding. 
+
+> - **Note:** These finding types are different than the findings created in Step 5, and will not invoke the Purging Engine from Step 7.
+
+12. (**Security Account**) All findings (in their Home Region) are pushed transparently into the Security Hub Master account. You can use this to collect all information about purged packages and vulnerable software in your organization.
 
 ## Description
 
@@ -151,9 +167,9 @@ TODO
 
 #### What does this solution do?
 
-OpenCAVS provides a mechanism with which to locate known vulnerable software packages and their associated vulnerabilities (and vulnerability metadata) from the NIST NVD and store them within DynamoDB. EventBridge and Lambda are utilized to perform event-driven vulnerability analysis of software packages being pushed into or updated within an AWS CodeArtifact Repository. 
+OpenCAVS provides a mechanism with which to locate known vulnerable software packages and their associated vulnerabilities (and vulnerability metadata) from the NIST NVD and store them within DynamoDB. EventBridge and Lambda are utilized to perform event-driven vulnerability analysis of software packages, and their dependencies, being pushed into or updated within an AWS CodeArtifact Repository. 
 
-Optionally, you can configure this solution to purge vulnerable packages in CodeArtifact based on a specific CVSS score or stated severity level. This solution can be deployed for a centralized CodeArtifact model or to support a distributed model across many Accounts, Regions, and CodeArtifact Repositories.
+Additionally, a Purging Engine is provided which will be invoked directly from Security Hub upon software vulnerability findings being create, you set thresholds for CVSSv2.0 and CVSSv3.0 Base Scores and any software package with a vulnerability greater than or equal to that threshold will be removed. Finally, each software package downstream Asset (binaries) will have their SHA1 and SHA256 hashes parsed and provided to [Team Cymru's Malware Hash Registry (MHR)](https://team-cymru.com/community-services/mhr/) to be evaluated for evidence of malware or viruses.
 
 #### What is Software Composition Analysis (SCA)?
 
@@ -217,6 +233,14 @@ If a vulnerable software package finding is pushed into AWS Security Hub, the fi
 
 You can use Security Hub Insights or perform ingestion into another BI tool from Security Hub. In the future, an integration with Amazon QuickSight may be developed - in the meantime you can use this example from ElectricEye-Reports, an open-source AWS-native cloud security posture management (CSPM) tool by OpenCAVS's author.
 
+#### How is information about the software package dependencies retrieved? What about the software package Assets (binaries)?
+
+This information is provided from CodeArtifact APIs and is taken at face value. 
+
+#### Are there different finding types created for dependency vulnerabilities and/or asset malware indicators?
+
+Yes. Each of those additional detections, along with the core package vulnerability, are created as their own distinct findings for future analysis and reporting.
+
 #### Will this solution work with CodeCommit?
 
 No, not as designed. Any modifications to this solution for purpose of scanning dependencies within CodeCommit are out of scope but could perhaps be added in scope in the future. I do reccomend using [Amazon CodeGuru Reviewer](https://aws.amazon.com/codeguru/) (if you use Python or Java) though, it has some built in [Security](https://aws.amazon.com/about-aws/whats-new/2020/12/amazon-codeguru-reviewer-announces-security-detectors-improve-code-security/) checks.
@@ -231,7 +255,7 @@ Some CVEs do not have any CVSS scoring information recorded at all, and thus, pu
 
 #### Can I perform vulnerability analysis of package dependencies?
 
-This feature is out of scope for this solution for the time being. In the future another extension will be included within Lambda to detect vulnerabilities (and purge the package) based on dependencies.
+Yes. A Dependency Vuln Analysis Lambda Function is created with either Deployment Model that will use CodeArtifact APIs to retrieve information about software package dependencies as use the same flow as the core vulnerability analysis of OpenCAVS to detect vulnerable software.
 
 #### Can I report on package licenses? Can I purge based on licenses?
 
@@ -261,6 +285,7 @@ A Python script is provided in the `/exports` directory which will read out the 
 
 An exact estimation will be hard to produce without historical numbers, to perform your own cost analysis you will need to factor in how many Accounts and across how many Regions this solution will be deployed. To perform you own estimate you will need to use the [AWS Pricing Calculator](https://calculator.aws/#/createCalculator) and the following pricing pages per service used:
 
+  - [CodeArtifact Pricing](https://aws.amazon.com/codeartifact/pricing/)
   - [Lambda Pricing](https://aws.amazon.com/lambda/pricing/)
   - [DynamoDB Pricing](https://aws.amazon.com/dynamodb/pricing/)
   - [EventBridge Pricing](https://aws.amazon.com/eventbridge/pricing/)
@@ -271,6 +296,8 @@ The most common scenario based on my testing is the initial setup will be the mo
 On average there are ~750 entries within the `Modified` NVD feed, if you performed a load every hour as configured, that is an additional $1.35/Month (~1M WCUs). If you performed 500K/Month strongly consistent lookups against DynamoDB (OpenCAVS used `Scan()` by default) that will be $0.13/Month. Assuming 720 Lambda requests lasting ~30 seconds each to perform this load, that falls well under the free tier. If you did an additional 2M invocations (well above what we estimated for DynamoDB Reads) that would cost $0.20/Month.
 
 The last piece is EventBridge ($1/Million Events - you will likely stay far below that) and Security Hub. Assuming 500K evaluations, and 20% are vulnerable packages, that is 100K Security Hub Findings/Month which are billed at $0.00003 per Finding - that comes out to $3. Assuming you hit 1M Events - **the above estimate would cost $7.93/Month** - as the DynamoDB Table will still be in a Single Region and a Single Account for the Distributed or Centralized Deployments.
+
+> - **Note:** With the introduction of software dependency vulnerability scanning and malware analysis - you can double the charges for Lambda and DynamoDB and still be under $15/Month for this solution - not counting CodeArtifact and data transfer costs.
 
 ## Contributing
 
