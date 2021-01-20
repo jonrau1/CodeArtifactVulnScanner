@@ -119,11 +119,11 @@ Resources:
   OpenCAVSDepAnalysisLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub '${SolutionVariable}DependencyVulnAnalysis'
+      FunctionName: !Sub '${SolutionVariable}DependencyVulnAnalyzer'
       Description: >-
         Upon being triggered will attempt to parse and analyze vulnerabilities in the dependencies of a software package
         within CodeArtifact - Managed by CloudFormation
-      Handler: updater_lambda_function.lambda_handler
+      Handler: dep_analyzer_lambda_function.lambda_handler
       MemorySize: 256
       Role: !GetAtt OpenCAVSLambdaExecRole.Arn
       Runtime: python3.8
@@ -134,14 +134,14 @@ Resources:
       Code:
         S3Bucket: !Ref LambdaCodeBucket
         S3Key: DepAnalysisLambdaPackage.zip
-  OpenCAVSMalwareDetectorLambdaFunction:
+  OpenCAVSMalwareAnalyzerLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub '${SolutionVariable}MalwareDetection'
+      FunctionName: !Sub '${SolutionVariable}MalwareAnalyzer'
       Description: >-
         Upon being triggered will attempt to parse and analyze viruses/malware in the assets of a software package
         within CodeArtifact by comparing SHA1/MD5 hashes against MHR - Managed by CloudFormation
-      Handler: updater_lambda_function.lambda_handler
+      Handler: malware_analyzer_lambda_function.lambda_handler
       MemorySize: 256
       Role: !GetAtt OpenCAVSLambdaExecRole.Arn
       Runtime: python3.8
@@ -208,7 +208,7 @@ Resources:
           Arn: !GetAtt OpenCAVSDepAnalysisLambdaFunction.Arn
           Id: OpenCAVSAnalysisRule
         - 
-          Arn: !GetAtt OpenCAVSMalwareDetectorLambdaFunction.Arn
+          Arn: !GetAtt OpenCAVSMalwareAnalyzerLambdaFunction.Arn
           Id: OpenCAVSMalwareAnalysisRule
   OpenCAVSAnalyzerCWEPermissions: 
     Type: AWS::Lambda::Permission
@@ -271,7 +271,7 @@ Resources:
   OpenCAVSMalwareAnalyzerCWEPermissions: 
     Type: AWS::Lambda::Permission
     Properties: 
-      FunctionName: !Ref OpenCAVSMalwareDetectorLambdaFunction
+      FunctionName: !Ref OpenCAVSMalwareAnalyzerLambdaFunction
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
       SourceArn: !GetAtt OpenCAVSAnalysisEventRule.Arn
