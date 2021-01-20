@@ -100,7 +100,7 @@ Resources:
   OpenCAVSVulnUpdaterLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub '${SolutionVariable}VulnUpdaterFunction'
+      FunctionName: !Sub '${SolutionVariable}NvdModifiedUpdater'
       Description: >-
         Every 24 hours this function will parse the Modified NVD JSON Feed and write the 
         contents into a DyanmoDB Table of your choosing - Managed by CloudFormation
@@ -116,6 +116,39 @@ Resources:
       Code:
         S3Bucket: !Ref LambdaCodeBucket
         S3Key: UpdaterLambdaPackage.zip
+  OpenCAVSDepAnalysisLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${SolutionVariable}DependencyVulnAnalysis'
+      Description: >-
+        Upon being triggered will attempt to parse and analyze vulnerabilities in the dependencies of a software package
+        within CodeArtifact - Managed by CloudFormation
+      Handler: updater_lambda_function.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt OpenCAVSLambdaExecRole.Arn
+      Runtime: python3.8
+      Timeout: 61
+      Environment:
+        Variables:
+          NVD_DDB_TABLE: !Ref NVDDynamoDBTableName
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: DepAnalysisLambdaPackage.zip
+  OpenCAVSMalwareDetectorLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${SolutionVariable}MalwareDetection'
+      Description: >-
+        Upon being triggered will attempt to parse and analyze viruses/malware in the assets of a software package
+        within CodeArtifact by comparing SHA1/MD5 hashes against MHR - Managed by CloudFormation
+      Handler: updater_lambda_function.lambda_handler
+      MemorySize: 256
+      Role: !GetAtt OpenCAVSLambdaExecRole.Arn
+      Runtime: python3.8
+      Timeout: 30
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: MalwareDetectionLambdaPackage.zip
   OpenCAVSLambdaExecRole:
     Type: AWS::IAM::Role
     Properties:
@@ -159,8 +192,8 @@ Resources:
     Properties: 
       Name: !Sub '${SolutionVariable}CodeArtifactAnalysisEvent'
       Description: >-
-        Triggers a Lambda Function upon any new software packages being added, or existing packages updated, within
-        AWS CodeArtifact - Managed by CloudFormation
+        Triggers multiple Lambda Functions upon any new software packages being added, or existing packages updated, 
+        within AWS CodeArtifact - Managed by CloudFormation
       EventPattern: 
         source:
           - aws.codeartifact
@@ -168,10 +201,15 @@ Resources:
           - CodeArtifact Package Version State Change
       State: ENABLED
       Targets:
-      # NOTE TO SELF: Add Malware and Dependency Analyzer targets 
         - 
           Arn: !GetAtt OpenCAVSAnalysisLambdaFunction.Arn
+          Id: OpenCAVSDepAnalysisRule
+        - 
+          Arn: !GetAtt OpenCAVSDepAnalysisLambdaFunction.Arn
           Id: OpenCAVSAnalysisRule
+        - 
+          Arn: !GetAtt OpenCAVSMalwareDetectorLambdaFunction.Arn
+          Id: OpenCAVSMalwareAnalysisRule
   OpenCAVSAnalyzerCWEPermissions: 
     Type: AWS::Lambda::Permission
     Properties: 
@@ -223,11 +261,17 @@ Resources:
         - 
           Arn: !GetAtt OpenCAVSPurgingLambdaFunction.Arn
           Id: OpenCAVSPurgingRule
-  OpenCAVSAnalyzerCWEPermissions: 
+  OpenCAVSDepAnalyzerCWEPermissions: 
     Type: AWS::Lambda::Permission
     Properties: 
-      FunctionName: !Ref OpenCAVSPurgingLambdaFunction
+      FunctionName: !Ref OpenCAVSDepAnalysisLambdaFunction
       Action: lambda:InvokeFunction
       Principal: events.amazonaws.com
-      SourceArn: !GetAtt OpenCAVSPurgingEventRule.Arn
-  # NOTE TO SELF: Add Malware and Dependency Analyzer Permissions for reach
+      SourceArn: !GetAtt OpenCAVSAnalysisEventRule.Arn
+  OpenCAVSMalwareAnalyzerCWEPermissions: 
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref OpenCAVSMalwareDetectorLambdaFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt OpenCAVSAnalysisEventRule.Arn
